@@ -17,9 +17,69 @@
     <%= @event.desc %>
   </li>
 
+  <li>
+    <strong>Created By:</strong>
+    <%= @event.user.name %>
+  </li>
+
 </ul>
 
 <p>
-  <span><%= link "Edit", to: Routes.event_path(@conn, :edit, @event) %></span>
+  <%= if current_user_id?(@conn, @event.user_id) do %>
+    <span><%= link "Edit", to: Routes.event_path(@conn, :edit, @event) %></span>
+  <% end %>
   <span><%= link "Back", to: Routes.event_path(@conn, :index) %></span>
 </p>
+
+<%= if current_user_id?(@conn, @event.user_id) do %>
+  <%# It is unclear whether or not invitees should be able to see the invitations.
+      It is implemented where only the event's creator can see them. %>
+  <h3>Add Invitations</h3>
+  <%= render(
+    EventApp07Web.InvitationView,
+    "form.html",
+    changeset: @new_invitation,
+    action: Routes.invitation_path(@conn, :create)
+  ) %>
+
+  <h3>Invitations</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for invitation <- @event.invitations do %>
+        <tr>
+          <td><%= invitation.email %></td>
+          <td><%= invitation.response %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= if have_current_user?(@conn) do %>
+  <%# It is not explicitly stated that invitees can see other user's comments.
+      It is implemented where a logged in user can see all other comments for that event.%>
+
+  <h3>Add Comment</h3>
+  <%= render(
+    EventApp07Web.CommentView,
+    "form.html",
+    changeset: @new_comment,
+    action: Routes.comment_path(@conn, :create)
+  ) %>
+
+  <h3>Comments</h3>
+  <%= for comm <- @event.comments do %>
+    <div class="card">
+      <div class="card-body">
+        <p>Comment by <%= comm.user.name %></p>
+        <p class="card-text"><%= comm.body %></p>
+      </div>
+    </div>
+  <% end %>
+<% end %>

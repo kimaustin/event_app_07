@@ -3,6 +3,33 @@ defmodule EventApp07Web.EventController do
 
   alias EventApp07.Events
   alias EventApp07.Events.Event
+  alias EventApp07.Comments
+  alias EventApp07.Invitations
+  alias EventApp07Web.Plugs
+
+  plug Plugs.RequireUser when action in [:new, :edit, :create, :update]
+  plug :fetch_event when action in [:show, :edit, :update, :delete]
+  plug :require_owner when action in [:edit, :update, :delete]
+
+  def fetch_event(conn, _args) do
+    id = conn.params["id"]
+    event = Events.get_event!(id)
+    assign(conn, :event, event)
+  end
+
+  def require_owner(conn, _args) do
+    user = conn.assigns[:current_user]
+    event = conn.assigns[:event]
+
+    if user.id == event.user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "That isn't yours.")
+      |> redirect(to: Routes.page_path(conn, :index))
+      |> halt()
+    end
+  end
 
   def index(conn, _params) do
     events = Events.list_events()
@@ -14,7 +41,10 @@ defmodule EventApp07Web.EventController do
     render(conn, "new.html", changeset: changeset)
   end
 
+  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
+    event_params = event_params
+    |> Map.put("user_id", conn.assigns[:current_user].id)
     case Events.create_event(event_params) do
       {:ok, event} ->
         conn
@@ -26,19 +56,35 @@ defmodule EventApp07Web.EventController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    event = Events.get_event!(id)
-    render(conn, "show.html", event: event)
+  @spec show(Plug.Conn.t(), map) :: Plug.Conn.t()
+  def show(conn, %{"id" => _id}) do
+    event = Events.load_comments_invitations(conn.assigns[:event])
+    # event = Events.get_event!(id)
+    comm = %Comments.Comment{
+      event_id: event.id,
+      user_id: current_user_id(conn),
+      vote: 0,
+    }
+    invitation = %Invitations.Invitation{
+      event_id: event.id,
+      email: "",
+      response: "none"
+    }
+    new_comment = Comments.change_comment(comm)
+    new_invitation = Invitations.change_invitation(invitation)
+    render(conn, "show.html", event: event, new_comment: new_comment, new_invitation: new_invitation)
   end
 
-  def edit(conn, %{"id" => id}) do
-    event = Events.get_event!(id)
+  def edit(conn, %{"id" => _id}) do
+    event = conn.assigns[:event]
+    # event = Events.get_event!(id)
     changeset = Events.change_event(event)
     render(conn, "edit.html", event: event, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "event" => event_params}) do
-    event = Events.get_event!(id)
+  def update(conn, %{"id" => _id, "event" => event_params}) do
+    event = conn.assigns[:event]
+    # event = Events.get_event!(id)
 
     case Events.update_event(event, event_params) do
       {:ok, event} ->
@@ -51,8 +97,9 @@ defmodule EventApp07Web.EventController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    event = Events.get_event!(id)
+  def delete(conn, %{"id" => _id}) do
+    event = conn.assigns[:event]
+    # event = Events.get_event!(id)
     {:ok, _event} = Events.delete_event(event)
 
     conn

@@ -6,7 +6,7 @@
       <th>Title</th>
       <th>Date</th>
       <th>Desc</th>
-
+      <th>Created By</th>
       <th></th>
     </tr>
   </thead>
@@ -16,15 +16,19 @@
       <td><%= event.title %></td>
       <td><%= event.date %></td>
       <td><%= event.desc %></td>
-
+      <td><%= event.user.name %></td>
       <td>
         <span><%= link "Show", to: Routes.event_path(@conn, :show, event) %></span>
-        <span><%= link "Edit", to: Routes.event_path(@conn, :edit, event) %></span>
-        <span><%= link "Delete", to: Routes.event_path(@conn, :delete, event), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <%= if current_user_id?(@conn, event.user_id) do %>
+          <span><%= link "Edit", to: Routes.event_path(@conn, :edit, event) %></span>
+          <span><%= link "Delete", to: Routes.event_path(@conn, :delete, event), method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <% end %>
       </td>
     </tr>
 <% end %>
   </tbody>
 </table>
 
-<span><%= link "New Event", to: Routes.event_path(@conn, :new) %></span>
+<%= if have_current_user?(@conn) do %>
+   <span><%= link "New Event", to: Routes.event_path(@conn, :new) %></span>
+<% end %>
