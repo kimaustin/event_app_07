@@ -12,6 +12,11 @@
     <%= @invitation.response %>
   </li>
 
+  <li>
+    <strong>Invite Link:</strong>
+    <%= "http://" <> @conn.host <> ":" <> Integer.to_string(@conn.port) <> Routes.invitation_path(@conn, :edit, @invitation) %>
+  </li>
+
 </ul>
 
 <span><%= link "Edit", to: Routes.invitation_path(@conn, :edit, @invitation) %></span>

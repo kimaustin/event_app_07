@@ -17,7 +17,6 @@ defmodule EventApp07Web.EventController do
     event = Events.get_event!(id)
     assign(conn, :event, event)
   end
-
   def require_owner(conn, _args) do
     user = conn.assigns[:current_user]
     event = conn.assigns[:event]
@@ -31,12 +30,10 @@ defmodule EventApp07Web.EventController do
       |> halt()
     end
   end
-
   def index(conn, _params) do
     events = Events.list_events()
     render(conn, "index.html", events: events)
   end
-
   def new(conn, _params) do
     changeset = Events.change_event(%Event{})
     render(conn, "new.html", changeset: changeset)

@@ -6,19 +6,24 @@
   <% end %>
 
   <div class="form-group">
-    <%= label f, :photo %>
+    <%= if @conn.assigns[:user] do %>
+      <strong>Current Profile Picture:</strong>
+      <p><img src="<%= Routes.user_path(@conn, :photo, @user) %>" alt=""></p>
+    <% end %>
+    <p></p>
+    <p><span>Update <%= label f, :photo %></span></p>
     <%= file_input f, :photo, class: "form-control" %>
     <%= error_tag f, :photo %>
   </div>
 
   <div class="form-group">
-    <%= label f, :name %>
+    <p><span>Update <%= label f, :name %></span></p>
     <%= text_input f, :name, class: "form-control" %>
     <%= error_tag f, :name %>
   </div>
 
   <div class="form-group">
-    <%= label f, :email %>
+    <p><span>Update <%= label f, :email %></span></p>
     <%= text_input f, :email, class: "form-control" %>
     <%= error_tag f, :email %>
   </div>

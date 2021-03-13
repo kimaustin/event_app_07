@@ -5,8 +5,9 @@ defmodule EventApp07.Users do
 
   import Ecto.Query, warn: false
   alias EventApp07.Repo
-
+  alias EventApp07.Invitations.Invitation
   alias EventApp07.Users.User
+  import Logger
 
   @doc """
   Returns the list of users.
@@ -59,6 +60,20 @@ defmodule EventApp07.Users do
     |> User.changeset(attrs)
     |> Repo.insert()
   end
+
+def update_invitations(email, user_id) do
+  Repo.all(Invitation)
+    |> Enum.each(fn x ->
+      # Logger.info(x)
+      # Logger.info(x.email)
+      # Logger.info(user["email"])
+      if !x.user_id && x.email == email do
+        Repo.update(Invitation.changeset(x, %{"user_id" => user_id}))
+      end
+    end)
+end
+
+  # x.user is nil then assign x.user wi/ curr user id
 
   @doc """
   Updates a user.

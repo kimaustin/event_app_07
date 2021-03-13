@@ -4,6 +4,31 @@ defmodule EventApp07Web.UserController do
   alias EventApp07.Users
   alias EventApp07.Users.User
   alias EventApp07.Photos
+  alias EventApp07Web.Plugs
+
+  plug Plugs.RequireUser when action in [:edit, :update]
+  plug :fetch_user when action in [:show, :edit, :update, :delete]
+  plug :require_owner when action in [:edit, :update, :delete]
+
+  def fetch_user(conn, _args) do
+    id = conn.params["id"]
+    user = Users.get_user(id)
+    assign(conn, :user, user)
+  end
+
+  def require_owner(conn, _args) do
+    curr_user = conn.assigns[:current_user]
+    user = conn.assigns[:user]
+
+    if user && user.id == curr_user.id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "That isn't you.")
+      |> redirect(to: Routes.page_path(conn, :index))
+      |> halt()
+    end
+  end
 
   def index(conn, _params) do
     users = Users.list_users()
@@ -23,6 +48,7 @@ defmodule EventApp07Web.UserController do
 
     case Users.create_user(user_params) do
       {:ok, user} ->
+        Users.update_invitations(user_params["email"], user.id)
         conn
         |> put_flash(:info, "User created successfully.")
         |> redirect(to: Routes.user_path(conn, :show, user))

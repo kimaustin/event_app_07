@@ -15,6 +15,6 @@ defmodule EventApp07.Invitations.Invitation do
   def changeset(invitation, attrs) do
     invitation
     |> cast(attrs, [:email, :response, :event_id, :user_id])
-    |> validate_required([:email, :response, :event_id, :user_id])
+    |> validate_required([:email, :response, :event_id])
   end
 end

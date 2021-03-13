@@ -9,8 +9,14 @@
   <%= text_input f, :email %>
   <%= error_tag f, :email %>
 
+  <%= if assigns[:on_event] do %>
+    <%= label f, :response %>
+    <%= select f, :response, @rsvp, class: "form-control" %>
+    <%= error_tag f, :response %>
+  <% end %>
+
   <div>
-    <%= submit "Invite" %>
+    <%= submit "Save" %>
   </div>
 
   <%= hidden_input f, :event_id %>

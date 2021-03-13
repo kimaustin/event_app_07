@@ -5,7 +5,7 @@ defmodule EventApp07.Invitations do
 
   import Ecto.Query, warn: false
   alias EventApp07.Repo
-
+  alias EventApp07.Users.User
   alias EventApp07.Invitations.Invitation
 
   @doc """
@@ -35,7 +35,27 @@ defmodule EventApp07.Invitations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_invitation!(id), do: Repo.get!(Invitation, id)
+  def get_invitation!(id) do
+    Repo.get!(Invitation, id)
+    # if invitation.user_id == nil do
+    #   user = Repo.get_by(User, email: invitation.email)
+    #   if user do
+    #     invitation.user_id = user.id
+    #   end
+    # end
+    # invitation
+  end
+
+  # def get_invitation!(id) do
+  #   invitation = Repo.get!(Invitation, id)
+  #   if invitation.user_id == nil do
+  #     user = Repo.get_by(User, email: invitation.email)
+  #     if user do
+  #       invitation.user_id = user.id
+  #     end
+  #   end
+  #   invitation
+  # end
 
   @doc """
   Creates a invitation.

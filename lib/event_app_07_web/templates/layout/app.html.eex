@@ -12,13 +12,12 @@
     <div role="main" class="container">
       <div class="row">
         <div class="col">
-        <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-          <p><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
-        <% end %>
+        <p><%= link "Home", to: Routes.page_path(@conn, :index) %></p>
         </div>
         <%= if @conn.assigns[:current_user] do %>
           <div class="col">
-            User: <%= @current_user.name %> |
+            User:
+            <%= link @current_user.name, to: Routes.user_path(@conn, :edit, @current_user) %> |
             <%= link("Logout", to: Routes.session_path(@conn, :delete),
               method: :delete) %>
           </div>
