@@ -46,7 +46,7 @@ defmodule EventApp07.Photos do
 
   def base_path(hash) do
     Path.expand("~/data/event_app_07")
-    |> Path.join("#{Mix.env}")
+    # |> Path.join("#{Mix.env}")
     |> Path.join(String.slice(hash, 0, 2))
     |> Path.join(String.slice(hash, 2, 30))
   end

@@ -94,9 +94,9 @@ defmodule EventApp07Web.InvitationController do
     # end
   end
 
-  def show(conn, %{"id" => _id}) do
-    invitation = Invitations.load_event_user(conn.assigns[:invitation])
-    # invitation = Invitations.get_invitation!(id)
+  def show(conn, %{"id" => id}) do
+    # invitation = Invitations.load_event_user(conn.assigns[:invitation])
+    invitation = Invitations.get_invitation!(id)
     render(conn, "show.html", invitation: invitation)
   end
 
