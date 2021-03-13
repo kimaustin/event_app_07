@@ -22,6 +22,12 @@ defmodule EventApp07.Events do
     |> Repo.preload(:user)
   end
 
+  def list_events_for_user(user_id) do
+    Enum.filter(Repo.all(Event), fn x ->
+      x.user_id == user_id
+    end)
+    |> Repo.preload(:user)
+  end
 
   def load_comments_invitations(%Event{} = event) do
     Repo.preload(event, [comments: :user, invitations: :user])

@@ -9,10 +9,6 @@
     <%= label f, :body %>
     <%= textarea f, :body, class: "form-control"  %>
     <%= error_tag f, :body %>
-
-    <%= label f, :vote %>
-    <%= number_input f, :vote %>
-    <%= error_tag f, :vote %>
   </div>
 
   <div>

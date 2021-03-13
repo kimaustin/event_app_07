@@ -4,7 +4,7 @@
 
   <li>
     <strong>Event Picture:</strong>
-    <img src="<%= Routes.event_path(@conn, :photo, @event) %>" alt="">
+    <img src="<%= Routes.event_path(@conn, :photo, @event) %>" alt="" width="15%">
   </li>
 
   <li>
@@ -25,6 +25,7 @@
   <li>
     <strong>Created By:</strong>
     <%= @event.user.name %>
+    <img src="<%= Routes.user_path(@conn, :photo, @event.user) %>" alt="" width="4%">
   </li>
 
 </ul>
@@ -38,7 +39,7 @@
 
 <%= if current_user_id?(@conn, @event.user_id) do %>
   <%# It is unclear whether or not invitees should be able to see the invitations.
-      It is implemented where only the event's creator can see them. %>
+      It is implemented where all invitees can see them. %>
   <h3>Add Invitations</h3>
   <%= render(
     EventApp07Web.InvitationView,
@@ -46,49 +47,74 @@
     changeset: @new_invitation,
     action: Routes.invitation_path(@conn, :create))
   %>
-
-  <h3 style="padding-top: 3%">Invitations</h3>
+  <h4 style="padding-top: 3%">Event Response Link</h4>
   <div>
-    <p><%= @conn.assigns[:num_yes] %> yes, <%= @conn.assigns[:num_maybe] %> maybe,
-      <%= @conn.assigns[:num_no] %> no, <%= @conn.assigns[:num_none] %> haven’t responded</p>
+    <%= "http://" <> @conn.host <> ":" <> Integer.to_string(@conn.port) <> Routes.event_path(@conn, :show, @event) %>
   </div>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Response</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= for invitation <- @event.invitations do %>
-        <tr>
-          <td><%= invitation.email %></td>
-          <td><%= invitation.response %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
 <% end %>
+
+<h3 style="padding-top: 3%">Invitations</h3>
+
+<%= if current_user_id?(@conn, @event.user_id) do %>
+    <div>
+      <p><%= @conn.assigns[:num_yes] %> yes, <%= @conn.assigns[:num_maybe] %> maybe,
+        <%= @conn.assigns[:num_no] %> no, <%= @conn.assigns[:num_none] %> haven’t responded</p>
+    </div>
+<% end %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Response</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for invitation <- @event.invitations do %>
+      <tr>
+        <td><%= invitation.email %></td>
+        <td><%= invitation.response %></td>
+        <td>
+          <%= if current_user_id?(@conn, invitation.user_id) do %>
+            <%= link "respond", to: Routes.invitation_path(@conn, :edit, invitation) %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
 <%= if have_current_user?(@conn) do %>
   <%# It is not explicitly stated that invitees can see other user's comments.
       It is implemented where a logged in user can see all other comments for that event.%>
 
-  <h3>Add Comment</h3>
-  <%= render(
-    EventApp07Web.CommentView,
-    "form.html",
-    changeset: @new_comment,
-    action: Routes.comment_path(@conn, :create)
-  ) %>
+  <%= if Enum.count(@event.comments, fn x -> current_user_id?(@conn, x.user_id) end) < 1 do %>
+    <h3>Add Comment</h3>
+    <%= render(
+      EventApp07Web.CommentView,
+      "form.html",
+      changeset: @new_comment,
+      action: Routes.comment_path(@conn, :create)
+    ) %>
+  <% end %>
 
-  <h3>Comments</h3>
+  <h3 style="padding-top: 3%">Comments</h3>
   <%= for comm <- @event.comments do %>
     <div class="card">
       <div class="card-body">
-        <p>Comment by <%= comm.user.name %></p>
+        <p>Comment by <%= comm.user.name %> <img src="<%= Routes.user_path(@conn, :photo, comm.user) %>" alt="" width="4%"></p>
         <p class="card-text"><%= comm.body %></p>
+        <%= if current_user_id?(@conn, comm.user_id) do %>
+          <%= link "update", to: Routes.comment_path(@conn, :edit, comm) %>
+        <% end %>
+        <%= if current_user_id?(@conn, @event.user_id) || current_user_id?(@conn, comm.user_id) do %>
+          <span><%= link "Delete", to: Routes.comment_path(@conn, :delete, comm),
+            method: :delete, data: [confirm: "Are you sure?"] %></span>
+        <% end %>
       </div>
+    </div>
+    <div style="padding-top: 5%">
     </div>
   <% end %>
 <% end %>

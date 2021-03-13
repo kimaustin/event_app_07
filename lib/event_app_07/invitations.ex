@@ -29,6 +29,8 @@ defmodule EventApp07.Invitations do
     Enum.filter(Repo.all(Invitation), fn x ->
       x.user_id == user_id
     end)
+    |> Repo.preload(:user)
+    |> Repo.preload(:event)
   end
 
 

@@ -15,6 +15,6 @@ defmodule EventApp07.Comments.Comment do
   def changeset(comment, attrs) do
     comment
     |> cast(attrs, [:body, :vote, :event_id, :user_id])
-    |> validate_required([:body, :vote, :event_id, :user_id])
+    |> validate_required([:body, :event_id, :user_id])
   end
 end
