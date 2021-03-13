@@ -3,6 +3,11 @@
 <ul>
 
   <li>
+    <strong>Event Picture:</strong>
+    <img src="<%= Routes.event_path(@conn, :photo, @event) %>" alt="">
+  </li>
+
+  <li>
     <strong>Title:</strong>
     <%= @event.title %>
   </li>

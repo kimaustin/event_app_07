@@ -5,6 +5,7 @@ defmodule EventApp07Web.EventController do
   alias EventApp07.Events.Event
   alias EventApp07.Comments
   alias EventApp07.Invitations
+  alias EventApp07.Photos
   alias EventApp07Web.Plugs
 
   plug Plugs.RequireUser when action in [:new, :edit, :create, :update]
@@ -43,8 +44,13 @@ defmodule EventApp07Web.EventController do
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
+    up = event_params["photo"]
+    {:ok, hash} = Photos.save_photo(up.filename, up.path)
+
     event_params = event_params
     |> Map.put("user_id", conn.assigns[:current_user].id)
+    |> Map.put("photo_hash", hash)
+
     case Events.create_event(event_params) do
       {:ok, event} ->
         conn
@@ -82,9 +88,19 @@ defmodule EventApp07Web.EventController do
     render(conn, "edit.html", event: event, changeset: changeset)
   end
 
-  def update(conn, %{"id" => _id, "event" => event_params}) do
-    event = conn.assigns[:event]
+  def update(conn, %{"id" => id, "event" => event_params}) do
+    # event = conn.assigns[:event]
     # event = Events.get_event!(id)
+    event = Events.get_event!(id)
+    up = event_params["photo"]
+
+    event_params = if up do
+      # FIXME: Remove old image
+      {:ok, hash} = Photos.save_photo(up.filename, up.path)
+      Map.put(event_params, "photo_hash", hash)
+    else
+      event_params
+    end
 
     case Events.update_event(event, event_params) do
       {:ok, event} ->
@@ -100,10 +116,22 @@ defmodule EventApp07Web.EventController do
   def delete(conn, %{"id" => _id}) do
     event = conn.assigns[:event]
     # event = Events.get_event!(id)
+
+    # FIXME: Remove old image
     {:ok, _event} = Events.delete_event(event)
 
     conn
     |> put_flash(:info, "Event deleted successfully.")
     |> redirect(to: Routes.event_path(conn, :index))
   end
+
+  # New controller function.
+  def photo(conn, %{"id" => id}) do
+    event = Events.get_event!(id)
+    {:ok, _name, data} = Photos.load_photo(event.photo_hash)
+    conn
+    |> put_resp_content_type("image/jpeg")
+    |> send_resp(200, data)
+  end
+
 end

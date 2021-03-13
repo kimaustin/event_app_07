@@ -6,6 +6,7 @@ defmodule EventApp07.Events.Event do
     field :date, :string
     field :desc, :string
     field :title, :string
+    field :photo_hash, :string
     belongs_to :user, EventApp07.Users.User
     has_many :comments, EventApp07.Comments.Comment
     has_many :invitations, EventApp07.Invitations.Invitation
@@ -16,7 +17,7 @@ defmodule EventApp07.Events.Event do
   @doc false
   def changeset(event, attrs) do
     event
-    |> cast(attrs, [:title, :date, :desc, :user_id])
-    |> validate_required([:title, :date, :desc, :user_id])
+    |> cast(attrs, [:title, :date, :desc, :photo_hash, :user_id])
+    |> validate_required([:title, :date, :desc, :photo_hash, :user_id])
   end
 end

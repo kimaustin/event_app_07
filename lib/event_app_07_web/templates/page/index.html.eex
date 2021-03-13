@@ -11,6 +11,8 @@
       <img class="card-img-top" src="" alt="">
       -->
       <div class="card-body">
+        <% src = Routes.event_path(@conn, :photo, event) %>
+        <img class="card-img-top" src="<%= src %>" alt="">
         <p class="card-text"><%= event.title %></p>
         <p class="card-text"><%= event.date %></p>
         <%= link "view", to: Routes.event_path(@conn, :show, event) %>

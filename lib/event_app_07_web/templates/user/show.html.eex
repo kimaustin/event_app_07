@@ -3,6 +3,11 @@
 <ul>
 
   <li>
+    <strong>User Profile Picture:</strong>
+    <img src="<%= Routes.user_path(@conn, :photo, @user) %>" alt="">
+  </li>
+
+  <li>
     <strong>Name:</strong>
     <%= @user.name %>
   </li>
