@@ -15,9 +15,7 @@
     <%= error_tag f, :response %>
   <% end %>
 
-  <div>
-    <%= submit "Save" %>
-  </div>
+  <%= submit "Save" %>
 
   <%= hidden_input f, :event_id %>
   <%= hidden_input f, :user_id %>

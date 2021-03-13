@@ -60,11 +60,13 @@ defmodule EventApp07Web.InvitationController do
         {:ok, invitation} ->
           conn
           |> put_flash(:info, "Invitation created successfully.")
-          |> redirect(to: Routes.invitation_path(conn, :show, invitation))
+          |> redirect(to: Routes.event_path(conn, :show, invitation.event_id))
           # add link
 
         {:error, %Ecto.Changeset{} = changeset} ->
-          render(conn, "new.html", changeset: changeset)
+          conn
+          |> put_flash(:error, "An invitation requires an email.")
+          |> redirect(to: Routes.event_path(conn, :show, invitation_params["event_id"]))
       end
       else
         invitation_params = invitation_params
@@ -74,11 +76,13 @@ defmodule EventApp07Web.InvitationController do
           {:ok, invitation} ->
             conn
             |> put_flash(:info, "Invitation created successfully.")
-            |> redirect(to: Routes.invitation_path(conn, :show, invitation))
+            |> redirect(to: Routes.event_path(conn, :show, invitation.event_id))
             # add link
 
           {:error, %Ecto.Changeset{} = changeset} ->
-            render(conn, "new.html", changeset: changeset)
+            conn
+            |> put_flash(:error, "An invitation requires an email.")
+            |> redirect(to: Routes.event_path(conn, :show, invitation_params["event_id"]))
         end
     end
 

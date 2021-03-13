@@ -42,20 +42,36 @@ defmodule EventApp07Web.EventController do
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
     up = event_params["photo"]
-    {:ok, hash} = Photos.save_photo(up.filename, up.path)
 
-    event_params = event_params
-    |> Map.put("user_id", conn.assigns[:current_user].id)
-    |> Map.put("photo_hash", hash)
+    if up do
+      {:ok, hash} = Photos.save_photo(up.filename, up.path)
 
-    case Events.create_event(event_params) do
-      {:ok, event} ->
-        conn
-        |> put_flash(:info, "Event created successfully.")
-        |> redirect(to: Routes.event_path(conn, :show, event))
+      event_params = event_params
+      |> Map.put("user_id", conn.assigns[:current_user].id)
+      |> Map.put("photo_hash", hash)
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
+      case Events.create_event(event_params) do
+        {:ok, event} ->
+          conn
+          |> put_flash(:info, "Event created successfully.")
+          |> redirect(to: Routes.event_path(conn, :show, event))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset)
+      end
+    else
+      event_params = event_params
+      |> Map.put("user_id", conn.assigns[:current_user].id)
+
+      case Events.create_event(event_params) do
+        {:ok, event} ->
+          conn
+          |> put_flash(:info, "Event created successfully.")
+          |> redirect(to: Routes.event_path(conn, :show, event))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "new.html", changeset: changeset)
+      end
     end
   end
 

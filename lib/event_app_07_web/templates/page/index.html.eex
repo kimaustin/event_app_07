@@ -1,3 +1,23 @@
+<%= if @conn.assigns[:invitations] do %>
+  <div class="row" style="padding-top: 3%">
+    <div class="col">
+      <h2>My Invitations</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <%= for invitation <- @invitations do %>
+      <div class="col-sm-4 card">
+        <div class="card-body">
+          <p class="card-text">Event: <%= link invitation.event.title, to: Routes.event_path(@conn, :show, invitation.event) %></p>
+          <p class="card-text">Your Response: <%= invitation.response %></p>
+          <%= link "Update Response", to: Routes.invitation_path(@conn, :edit, invitation) %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+<div style="padding-top: 3%"></div>
 <div class="row">
   <div class="col">
     <h2>My Events</h2>
@@ -27,22 +47,5 @@
   <% end %>
 </div>
 
-<%= if @conn.assigns[:invitations] do %>
-  <div class="row" style="padding-top: 3%">
-    <div class="col">
-      <h2>My Invitations</h2>
-    </div>
-  </div>
 
-  <div class="row">
-    <%= for invitation <- @invitations do %>
-      <div class="col-sm-4 card">
-        <div class="card-body">
-          <p class="card-text">Event: <%= link invitation.event.title, to: Routes.event_path(@conn, :show, invitation.event) %></p>
-          <p class="card-text">Your Response: <%= invitation.response %></p>
-          <%= link "Update Response", to: Routes.invitation_path(@conn, :edit, invitation) %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+<div style="padding-top: 5%"></div>

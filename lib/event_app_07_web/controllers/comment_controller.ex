@@ -21,7 +21,7 @@ defmodule EventApp07Web.CommentController do
       {:ok, comment} ->
         conn
         |> put_flash(:info, "Comment created successfully.")
-        |> redirect(to: Routes.comment_path(conn, :show, comment))
+        |> redirect(to: Routes.event_path(conn, :show, comment.event_id))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)

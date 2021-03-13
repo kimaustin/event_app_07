@@ -6,18 +6,28 @@
   <% end %>
 
   <div class="form-group">
+    <%= if @conn.assigns[:event] do %>
+      <strong>Current Event Picture:</strong>
+      <p><img src="<%= Routes.event_path(@conn, :photo, @event) %>" alt=""></p>
+    <% end %>
     <%= label f, :photo %>
     <%= file_input f, :photo, class: "form-control" %>
     <%= error_tag f, :photo %>
+  </div>
 
+  <div class="form-group">
     <%= label f, :title %>
     <%= textarea f, :title, class: "form-control" %>
     <%= error_tag f, :title %>
+  </div>
 
+  <div class="form-group">
     <%= label f, :date %>
     <%= textarea f, :date, class: "form-control" %>
     <%= error_tag f, :date %>
+  </div>
 
+  <div class="form-group">
     <%= label f, :desc %>
     <%= textarea f, :desc, class: "form-control" %>
     <%= error_tag f, :desc %>
@@ -25,5 +35,10 @@
 
   <div>
     <%= submit "Save", class: "btn btn-primary"%>
+    <%= if @conn.assigns[:event] do %>
+      <span><%= link "Cancel", to: Routes.event_path(@conn, :show, @event) %></span>
+      <% else %>
+        <span><%= link "Cancel", to: Routes.page_path(@conn, :index) %></span>
+    <% end %>
   </div>
 <% end %>
