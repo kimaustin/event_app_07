@@ -44,10 +44,14 @@
     EventApp07Web.InvitationView,
     "form.html",
     changeset: @new_invitation,
-    action: Routes.invitation_path(@conn, :create)
-  ) %>
+    action: Routes.invitation_path(@conn, :create))
+  %>
 
-  <h3>Invitations</h3>
+  <h3 style="padding-top: 3%">Invitations</h3>
+  <div>
+    <p><%= @conn.assigns[:num_yes] %> yes, <%= @conn.assigns[:num_maybe] %> maybe,
+      <%= @conn.assigns[:num_no] %> no, <%= @conn.assigns[:num_none] %> haven’t responded</p>
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>

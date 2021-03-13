@@ -19,7 +19,18 @@ defmodule EventApp07.Invitations do
   """
   def list_invitations do
     Repo.all(Invitation)
+    |> Repo.preload(:user)
+    |> Repo.preload(:event)
   end
+
+  def list_invitations_for_user(user_id) do
+    # query = from invitation in Invitation, where invitation.user_id = user_id
+    # Repo.all(Invitation)
+    Enum.filter(Repo.all(Invitation), fn x ->
+      x.user_id == user_id
+    end)
+  end
+
 
   @doc """
   Gets a single invitation.
@@ -44,6 +55,11 @@ defmodule EventApp07.Invitations do
     #   end
     # end
     # invitation
+  end
+
+  def load_event_user(%Invitation{} = invitation) do
+    Repo.preload(invitation, [event: :invitation, user: :invitation])
+    # Repo.preload(event, [invitations: :user])
   end
 
   # def get_invitation!(id) do
@@ -92,6 +108,7 @@ defmodule EventApp07.Invitations do
     |> Invitation.changeset(attrs)
     |> Repo.update()
   end
+
 
   @doc """
   Deletes a invitation.

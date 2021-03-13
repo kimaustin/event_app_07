@@ -62,6 +62,10 @@ defmodule EventApp07Web.EventController do
   @spec show(Plug.Conn.t(), map) :: Plug.Conn.t()
   def show(conn, %{"id" => _id}) do
     event = Events.load_comments_invitations(conn.assigns[:event])
+    num_yes = Enum.count(event.invitations, fn x -> x.response == "yes" end)
+    num_no = Enum.count(event.invitations, fn x -> x.response == "no" end)
+    num_maybe = Enum.count(event.invitations, fn x -> x.response == "maybe" end)
+    num_none = Enum.count(event.invitations, fn x -> x.response == "none" || x.response == "" end)
     # event = Events.get_event!(id)
     comm = %Comments.Comment{
       event_id: event.id,
@@ -75,7 +79,8 @@ defmodule EventApp07Web.EventController do
     }
     new_comment = Comments.change_comment(comm)
     new_invitation = Invitations.change_invitation(invitation)
-    render(conn, "show.html", event: event, new_comment: new_comment, new_invitation: new_invitation)
+    render(conn, "show.html", event: event, new_comment: new_comment, new_invitation: new_invitation,
+      num_yes: num_yes, num_no: num_no, num_maybe: num_maybe, num_none: num_none)
   end
 
   def edit(conn, %{"id" => _id}) do

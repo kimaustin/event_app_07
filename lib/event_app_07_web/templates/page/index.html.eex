@@ -1,7 +1,13 @@
 <div class="row">
   <div class="col">
-    <h1>Events</h1>
+    <h2>Events</h2>
   </div>
+</div>
+
+<div>
+  <%= if have_current_user?(@conn) do %>
+    <span><%= link "New Event", to: Routes.event_path(@conn, :new) %></span>
+  <% end %>
 </div>
 
 <div class="row">
@@ -21,8 +27,24 @@
   <% end %>
 </div>
 
-<div>
-  <%= if have_current_user?(@conn) do %>
-    <span><%= link "New Event", to: Routes.event_path(@conn, :new) %></span>
-  <% end %>
-</div>
+<%= if @conn.assigns[:invitations] do %>
+  <div class="row" style="padding-top: 3%">
+    <div class="col">
+      <h2>Invitations</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <%= for invitation <- @invitations do %>
+      <div class="col-sm-4 card">
+        <div class="card-body">
+          <p class="card-text"><%= invitation.email %></p>
+          <p class="card-text"><%= invitation.user_id %></p>
+          <p class="card-text"><%= invitation.event_id %></p>
+          <p class="card-text"><%= invitation.response %></p>
+          <%= link "respond", to: Routes.invitation_path(@conn, :edit, invitation) %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
